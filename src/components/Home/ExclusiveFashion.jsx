@@ -1,5 +1,5 @@
 import React from 'react'
-import products from './data/Exclusive.js';
+import products from './utils/Exclusive.js';
 
 
 function ExclusiveFashion() {
