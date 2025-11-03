@@ -1,19 +1,22 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
-// import AdminLayout from "../layouts/AdminLayout";
+
 import AdminLayout from "../components/common/layouts/AdminLayout";
 import UserLayout from "../components/common/layouts/UserLayout";
+import AddProductPage from "../pages/admin/products/AddProductPage";
 
-// import UserLayout from "../layouts/UserLayout";
+
 import ProtectedRoute from "../routes/ProtectedRoute";
+// Admin Pages
+import DashboardPage from "../pages/admin/DashboardPage";
+import ProductsListPage from "../pages/admin/products/ProductsListPage";
+import BookingsListPage from "../pages/admin/BookingsListPage";
+// User Pages
+import HomePage from "../pages/user/HomePage";
+import ProductDetailPage from "../pages/user/ProductDetailPage";
+import MyBookingsPage from "../pages/user/MyBookingsPage";
 
-import Dashboard from "../pages/admin/Dashboard";
-import Products from "../pages/admin/Products";
-import Bookings from "../pages/admin/Bookings";
-
-import Home from "../pages/user/Home";
-import ProductDetail from "../pages/user/ProductDetail";
-import MyBookings from "../pages/user/MyBookings";
+//common pages
 import Login from "../pages/Login";
 import Unauthorized from "../pages/Unauthorized";
 
@@ -34,9 +37,10 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "/admin/dashboard", element: <Dashboard /> },
-      { path: "/admin/product-list", element: <Products /> },
-      { path: "/admin/bookings", element: <Bookings /> },
+      { path: "/admin/dashboard", element: <DashboardPage /> },
+      { path: "/admin/product-list", element: <ProductsListPage /> },
+      { path: "/admin/product-create", element: <AddProductPage /> },
+      { path: "/admin/bookings", element: <BookingsListPage /> },
     ],
   },
   {
@@ -47,9 +51,9 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: "/", element: <Home /> },
-      { path: "/product/:id", element: <ProductDetail /> },
-      { path: "/my-bookings", element: <MyBookings /> },
+      { path: "/", element: <HomePage /> },
+      { path: "/product/:id", element: <ProductDetailPage /> },
+      { path: "/my-bookings", element: <MyBookingsPage /> },
     ],
   },
 ]);
