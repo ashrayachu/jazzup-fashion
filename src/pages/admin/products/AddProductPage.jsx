@@ -3,7 +3,7 @@ import AddProducts from "../../../components/products/AddProducts";
 const AddProductPage = () => {
     return (
         <div>
-            <AddProducts />
+            <AddProducts mode="create" />
         </div>
     );
 };

@@ -1,7 +1,14 @@
 import React from 'react';
 import { AiOutlinePlus, AiOutlineDownload } from 'react-icons/ai';
 
-const PageHeader = ({ title, desc, addBtn, clrBtn, handleAddButton }) => {
+const PageHeader = ({
+    title,
+    desc,
+    addBtn,
+    clrBtn,
+    handleAddButton,
+    customActions // New prop for custom action buttons
+}) => {
     return (
         <section className='pageHeader mb-8 border-b border-gray-200 p-5'>
             <div className='flex flex-col md:flex-row md:justify-between gap-4'>
@@ -12,7 +19,13 @@ const PageHeader = ({ title, desc, addBtn, clrBtn, handleAddButton }) => {
                 </div>
 
                 {/* Action Buttons */}
-                {addBtn && (
+                {customActions ? (
+                    // Render custom actions if provided
+                    <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3'>
+                        {customActions}
+                    </div>
+                ) : (
+                    // Default action buttons
                     <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3'>
                         {/* Export Button (hide when addBtn === "publish") */}
                         {addBtn !== "Publish" && (
@@ -23,14 +36,16 @@ const PageHeader = ({ title, desc, addBtn, clrBtn, handleAddButton }) => {
                         )}
 
                         {/* Add / Publish Button */}
-                        <button
-                            className='flex items-center justify-center gap-2 bg-primary text-white py-2.5 px-4 rounded-lg font-medium hover:opacity-90 transition-all'
-                            onClick={handleAddButton}
-                        >
-                            {/* Show plus icon only if not publishing */}
-                            {addBtn !== "Publish" && <AiOutlinePlus className='text-lg' />}
-                            <span className='text-sm sm:text-base'>{addBtn}</span>
-                        </button>
+                        {addBtn && (
+                            <button
+                                className='flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 px-4 rounded-lg font-medium hover:opacity-90 transition-all'
+                                onClick={handleAddButton}
+                            >
+                                {/* Show plus icon only if not publishing */}
+                                {addBtn !== "Publish" && <AiOutlinePlus className='text-lg' />}
+                                <span className='text-sm sm:text-base'>{addBtn}</span>
+                            </button>
+                        )}
                     </div>
                 )}
 

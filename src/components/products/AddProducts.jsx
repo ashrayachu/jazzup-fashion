@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Select, Button, Upload, InputNumber, ColorPicker, message } from 'antd';
+import { Input, Select, Button, Upload, InputNumber, ColorPicker, message, Spin } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColorExtractor } from 'react-color-extractor';
-import { productCreateApi, categoryListApi } from '../../api/admin/productApi';
+import { productCreateApi, categoryListApi, getSingleProductApi, updateProductApi } from '../../api/admin/productApi';
+import { useNavigate } from 'react-router-dom';
 import useProductStore from '../../store/useProductStore';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
-const AddProduct = () => {
-  const { categories, setCategories  } = useProductStore();
-  
+const AddProduct = ({ mode = 'create', productId = null }) => {
+  const navigate = useNavigate();
+  const isEditMode = mode === 'edit';
+  const { categories, setCategories } = useProductStore();
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     brand: '',
@@ -28,6 +32,7 @@ const AddProduct = () => {
         colorCode: '#000000',
         images: [],
         imageFiles: [],
+        existingImages: [], // Track existing images from database
         sizes: [{ size: '', quantity: '' }]
       }
     ]
@@ -106,12 +111,61 @@ const AddProduct = () => {
     fetchCategories();
   }, []);
 
+  // Fetch product data for edit mode
+  useEffect(() => {
+    const fetchProductForEdit = async () => {
+      if (!isEditMode || !productId) return;
+
+      try {
+        setLoading(true);
+        const response = await getSingleProductApi(productId);
+
+        if (response?.data?.success) {
+          const product = response.data.product;
+
+          // Populate form with existing data
+          setFormData({
+            name: product.name,
+            brand: product.brand,
+            categoryId: product.category?._id || product.category,
+            subCategory: product.subCategory,
+            price: product.price,
+            description: product.description || '',
+            sizeType: product.sizeType || '',
+            fabric: product.fabric || '',
+            fitType: product.fitType || '',
+            sleeveType: product.sleeveType || '',
+            variants: product.variants.map(variant => ({
+              color: variant.color,
+              colorCode: variant.colorCode,
+              images: variant.images || [], // For display
+              imageFiles: [], // New uploads
+              existingImages: variant.images || [], // Track existing
+              sizes: variant.sizes || [{ size: '', quantity: '' }]
+            }))
+          });
+
+          message.success('Product loaded successfully');
+        }
+      } catch (err) {
+        console.error('Error fetching product:', err);
+        message.error('Failed to load product data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductForEdit();
+  }, [isEditMode, productId]);
+
   const getSubCategories = (categoryId) => {
+    if (!categories || !Array.isArray(categories)) return [];
     const category = categories.find(cat => cat._id === categoryId);
     return category ? category.subCategories : [];
   };
 
   const handleCategoryChange = (categoryId) => {
+    if (!categories || !Array.isArray(categories)) return;
     const category = categories.find(cat => cat._id === categoryId);
     setFormData({
       ...formData,
@@ -143,51 +197,9 @@ const AddProduct = () => {
       const newVariants = [...formData.variants];
       newVariants[variantIndex].colorCode = dominantColor;
       setFormData({ ...formData, variants: newVariants });
-      setExtractingColors({ ...extractingColors, [variantIndex]: false });
-      message.success('Color extracted successfully!');
     }
-  };
-
-  const handleImageUpload = async (info, variantIndex) => {
-    const { fileList } = info;
-    const newVariants = [...formData.variants];
-
-    // Process and compress images
-    const processedFiles = await Promise.all(
-      fileList.map(async (file) => {
-        if (file.originFileObj && !file.compressed) {
-          try {
-            const compressedFile = await compressImage(file.originFileObj);
-            const originalSize = (file.originFileObj.size / 1024).toFixed(2);
-            const compressedSize = (compressedFile.size / 1024).toFixed(2);
-            console.log(`Compressed: ${originalSize}KB → ${compressedSize}KB`);
-
-            return {
-              ...file,
-              originFileObj: compressedFile,
-              compressed: true,
-              size: compressedFile.size
-            };
-          } catch (error) {
-            console.error('Compression failed:', error);
-            return file;
-          }
-        }
-        return file;
-      })
-    );
-
-    newVariants[variantIndex].imageFiles = processedFiles;
-    newVariants[variantIndex].images = processedFiles.map(file =>
-      file.url || URL.createObjectURL(file.originFileObj)
-    );
-
-    setFormData({ ...formData, variants: newVariants });
-
-    // Trigger color extraction for the first image
-    if (processedFiles.length > 0 && processedFiles[0].originFileObj) {
-      setExtractingColors({ ...extractingColors, [variantIndex]: true });
-    }
+    // Clear extraction flag
+    setExtractingColors({ ...extractingColors, [variantIndex]: false });
   };
 
   const beforeUpload = (file) => {
@@ -196,12 +208,57 @@ const AddProduct = () => {
       message.error('You can only upload image files!');
       return Upload.LIST_IGNORE;
     }
+
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
       message.error('Image must be smaller than 5MB!');
       return Upload.LIST_IGNORE;
     }
-    return false;
+
+    return false; // Prevent auto upload
+  };
+
+  const handleImageUpload = async (info, variantIndex) => {
+    const { fileList } = info;
+
+    // Compress images before adding to state
+    const compressedFileList = await Promise.all(
+      fileList.map(async (file) => {
+        if (file.originFileObj && !file.compressed) {
+          try {
+            const compressedFile = await compressImage(file.originFileObj);
+            return {
+              ...file,
+              originFileObj: compressedFile,
+              compressed: true
+            };
+          } catch (error) {
+            console.error('Error compressing image:', error);
+            message.error(`Failed to compress ${file.name}`);
+            return file;
+          }
+        }
+        return file;
+      })
+    );
+
+    const newVariants = [...formData.variants];
+    newVariants[variantIndex].imageFiles = compressedFileList;
+
+    // Create preview URLs for new uploads
+    const newImageUrls = compressedFileList
+      .filter(file => file.originFileObj)
+      .map(file => URL.createObjectURL(file.originFileObj));
+    // Combine existing images with new uploads
+    const existingImages = newVariants[variantIndex].existingImages || [];
+    newVariants[variantIndex].images = [...existingImages, ...newImageUrls];
+
+    setFormData({ ...formData, variants: newVariants });
+
+    // Trigger color extraction for first image
+    if (newImageUrls.length > 0) {
+      setExtractingColors({ ...extractingColors, [variantIndex]: true });
+    }
   };
 
   const addVariant = () => {
@@ -209,7 +266,7 @@ const AddProduct = () => {
       ...formData,
       variants: [
         ...formData.variants,
-        { color: '', colorCode: '#000000', images: [], imageFiles: [], sizes: [{ size: '', quantity: '' }] }
+        { color: '', colorCode: '#000000', images: [], imageFiles: [], existingImages: [], sizes: [{ size: '', quantity: '' }] }
       ]
     });
   };
@@ -311,6 +368,7 @@ const AddProduct = () => {
             colorCode: '#000000',
             images: [],
             imageFiles: [],
+            existingImages: [],
             sizes: [{ size: '', quantity: '' }]
           }
         ]

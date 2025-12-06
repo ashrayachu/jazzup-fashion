@@ -1,156 +1,203 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Select, Input, Button } from "antd";
 import { DownOutlined, SettingOutlined, FilterOutlined } from "@ant-design/icons";
+import { categoryListApi } from '../../api/admin/productApi';
+
 const { Search } = Input;
 
-// Product Tab Navigation Component with Filters
-const ProductNavigation = ({ activeTab, onChange, categories, brands }) => {
-    const [searchValue, setSearchValue] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [selectedBrand, setSelectedBrand] = useState(null);
-    const [selectedStock, setSelectedStock] = useState(null);
+// Product Navigation Component with Filters
+const ProductNavigation = ({
+    activeTab,
+    onChange,
+    onFilterChange,
+    onReset,
+    currentFilters
+}) => {
+    const [categories, setCategories] = useState([]);
+    const [brands, setBrands] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
+    const [localSearch, setLocalSearch] = useState(currentFilters.search || '');
+    const searchTimeoutRef = React.useRef(null);
 
-    const tabs = [
-        { key: "all", label: "All Products" },
-        { key: "inStock", label: "In Stock" },
-        { key: "lowStock", label: "Low Stock" },
-        { key: "outOfStock", label: "Out of Stock" }
+    // Fetch categories on mount
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await categoryListApi();
+                console.log("Category API Response:", response);
+                console.log("Categories data:", response?.data?.categories);
+                if (response?.data?.success) {
+                    setCategories(response.data.categories || []);
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // Stock status options
+    const stockOptions = [
+        { value: "all", label: "All Stock Levels" },
+        { value: "inStock", label: "In Stock" },
+        { value: "lowStock", label: "Low Stock" },
+        { value: "outOfStock", label: "Out of Stock" }
     ];
 
     // Convert categories to options format
     const categoryOptions = [
-        { value: "all", label: "All Categories" },
+        { value: null, label: "All Categories" },
         ...(categories || []).map(cat => ({
-            value: cat._id || cat,
+            value: cat._id || cat.id,
             label: cat.name || cat
         }))
     ];
 
+    console.log("Categories state:", categories);
+    console.log("Category options:", categoryOptions);
+
     // Convert brands to options format
     const brandOptions = [
-        { value: "all", label: "All Brands" },
+        { value: null, label: "All Brands" },
         ...(brands || []).map(brand => ({
             value: brand,
             label: brand
         }))
     ];
 
-    const stockOptions = [
-        { value: "all", label: "All Stock Levels" },
-        { value: "inStock", label: "In Stock" },
-        { value: "lowStock", label: "Low Stock (< 10)" },
-        { value: "outOfStock", label: "Out of Stock" }
-    ];
+    const handleStockChange = (value) => {
+        onChange(value); // Call the onChange prop for stock status
+    };
+
+    const handleCategoryChange = (value) => {
+        onFilterChange({ category: value });
+    };
+
+    const handleBrandChange = (value) => {
+        onFilterChange({ brand: value });
+    };
+
+    const handleSearchChange = (value) => {
+        // Update local state immediately for responsive UI
+        setLocalSearch(value);
+
+        // Clear existing timeout
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        // Set new timeout for debounced API call
+        searchTimeoutRef.current = setTimeout(() => {
+            onFilterChange({ search: value });
+        }, 600); // 600ms delay
+    };
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const handleReset = () => {
-        setSearchValue("");
-        setSelectedCategory(null);
-        setSelectedBrand(null);
-        setSelectedStock(null);
+        setLocalSearch(''); // Clear local search state
+        onReset();
     };
 
     return (
-        <div className="mb-6 border-b border-gray-200">
-            {/* Main row with tabs and filters */}
+        <div className="mb-6 pb-4 border-b border-gray-200">
+            {/* Main row with filters */}
             <div className="flex items-center justify-between px-2 sm:px-0">
-                {/* Tabs */}
-                <div className="flex gap-4 sm:gap-8 overflow-x-auto scrollbar-hide">
-                    {tabs.map(tab => (
-                        <div
-                            key={tab.key}
-                            onClick={() => onChange(tab.key)}
-                            className={`py-3 px-1 cursor-pointer border-b-2 transition-all whitespace-nowrap text-sm sm:text-base ${activeTab === tab.key
-                                    ? "border-blue-500 text-blue-500 font-semibold"
-                                    : "border-transparent text-gray-600 hover:text-blue-400"
-                                }`}
-                        >
-                            {tab.label}
-                        </div>
-                    ))}
-                </div>
+                {/* Desktop filters - hidden on mobile */}
+                <div className="hidden sm:flex items-center gap-3 flex-wrap">
+                    {/* Stock Status Dropdown */}
+                    <Select
+                        placeholder="Stock Status"
+                        value={activeTab}
+                        onChange={handleStockChange}
+                        options={stockOptions}
+                        suffixIcon={<DownOutlined className="text-gray-400" />}
+                        className="w-40"
+                    />
 
-                {/* Filters - Desktop inline, Mobile toggle button */}
-                <div className="flex items-center gap-3 pb-3">
-                    {/* Desktop filters - hidden on mobile */}
-                    <div className="hidden sm:flex items-center gap-3">
-                        {/* Category Dropdown */}
-                        <Select
-                            placeholder="Category"
-                            value={selectedCategory}
-                            onChange={setSelectedCategory}
-                            options={categoryOptions}
-                            suffixIcon={<DownOutlined className="text-gray-400" />}
-                            className="w-40"
-                            allowClear
-                        />
+                    {/* Category Dropdown */}
+                    <Select
+                        placeholder="Category"
+                        value={currentFilters.category}
+                        onChange={handleCategoryChange}
+                        options={categoryOptions}
+                        suffixIcon={<DownOutlined className="text-gray-400" />}
+                        className="w-40"
+                        allowClear
+                    />
 
-                        {/* Brand Dropdown */}
-                        <Select
-                            placeholder="Brand"
-                            value={selectedBrand}
-                            onChange={setSelectedBrand}
-                            options={brandOptions}
-                            suffixIcon={<DownOutlined className="text-gray-400" />}
-                            className="w-40"
-                            allowClear
-                        />
+                    {/* Brand Dropdown */}
+                    <Select
+                        placeholder="Brand"
+                        value={currentFilters.brand}
+                        onChange={handleBrandChange}
+                        options={brandOptions}
+                        suffixIcon={<DownOutlined className="text-gray-400" />}
+                        className="w-40"
+                        allowClear
+                    />
 
-                        {/* Stock Status Dropdown */}
-                        <Select
-                            placeholder="Stock Status"
-                            value={selectedStock}
-                            onChange={setSelectedStock}
-                            options={stockOptions}
-                            suffixIcon={<DownOutlined className="text-gray-400" />}
-                            className="w-40"
-                            allowClear
-                        />
+                    {/* Search Bar */}
+                    <Search
+                        placeholder="Search by product name..."
+                        value={localSearch}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        onSearch={handleSearchChange}
+                        className="w-80"
+                        allowClear
+                        onClear={() => handleSearchChange('')}
+                    />
 
-                        {/* Search Bar */}
-                        <Search
-                            placeholder="Search by product name or brand..."
-                            value={searchValue}
-                            onChange={(e) => setSearchValue(e.target.value)}
-                            onSearch={(value) => console.log("Search:", value)}
-                            className="w-80"
-                            allowClear
-                        />
-
-                        {/* Reset Button */}
-                        <Button
-                            className="text-gray-600 border rounded-lg border-gray-200 outline-none"
-                            onClick={handleReset}
-                        >
-                            Reset
-                        </Button>
-
-                        {/* Settings Button */}
-                        <Button
-                            icon={<SettingOutlined />}
-                            onClick={() => console.log("Settings clicked")}
-                            className="text-gray-600"
-                        />
-                    </div>
-
-                    {/* Filter toggle button - Mobile only */}
+                    {/* Reset Button */}
                     <Button
-                        icon={<FilterOutlined />}
-                        onClick={() => setShowFilters(!showFilters)}
-                        className="sm:hidden text-gray-600"
-                        type={showFilters ? "primary" : "default"}
+                        className="text-gray-600 border rounded-lg border-gray-200 outline-none"
+                        onClick={handleReset}
+                    >
+                        Reset
+                    </Button>
+
+                    {/* Settings Button */}
+                    <Button
+                        icon={<SettingOutlined />}
+                        onClick={() => console.log("Settings clicked")}
+                        className="text-gray-600"
                     />
                 </div>
+
+                {/* Filter toggle button - Mobile only */}
+                <Button
+                    icon={<FilterOutlined />}
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="sm:hidden text-gray-600"
+                    type={showFilters ? "primary" : "default"}
+                />
             </div>
 
             {/* Mobile filters dropdown */}
             <div className={`${showFilters ? 'block' : 'hidden'} sm:hidden px-2 pb-3 pt-2`}>
                 <div className="flex flex-col gap-3">
+                    {/* Stock Status Dropdown */}
+                    <Select
+                        placeholder="Stock Status"
+                        value={activeTab}
+                        onChange={handleStockChange}
+                        options={stockOptions}
+                        suffixIcon={<DownOutlined className="text-gray-400" />}
+                        className="w-full"
+                    />
+
                     {/* Category Dropdown */}
                     <Select
                         placeholder="Category"
-                        value={selectedCategory}
-                        onChange={setSelectedCategory}
+                        value={currentFilters.category}
+                        onChange={handleCategoryChange}
                         options={categoryOptions}
                         suffixIcon={<DownOutlined className="text-gray-400" />}
                         className="w-full"
@@ -160,20 +207,9 @@ const ProductNavigation = ({ activeTab, onChange, categories, brands }) => {
                     {/* Brand Dropdown */}
                     <Select
                         placeholder="Brand"
-                        value={selectedBrand}
-                        onChange={setSelectedBrand}
+                        value={currentFilters.brand}
+                        onChange={handleBrandChange}
                         options={brandOptions}
-                        suffixIcon={<DownOutlined className="text-gray-400" />}
-                        className="w-full"
-                        allowClear
-                    />
-
-                    {/* Stock Status Dropdown */}
-                    <Select
-                        placeholder="Stock Status"
-                        value={selectedStock}
-                        onChange={setSelectedStock}
-                        options={stockOptions}
                         suffixIcon={<DownOutlined className="text-gray-400" />}
                         className="w-full"
                         allowClear
@@ -181,12 +217,13 @@ const ProductNavigation = ({ activeTab, onChange, categories, brands }) => {
 
                     {/* Search Bar */}
                     <Search
-                        placeholder="Search by product name or brand..."
-                        value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}
-                        onSearch={(value) => console.log("Search:", value)}
+                        placeholder="Search by product name..."
+                        value={localSearch}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        onSearch={handleSearchChange}
                         className="w-full"
                         allowClear
+                        onClear={() => handleSearchChange('')}
                     />
 
                     {/* Action Buttons */}
