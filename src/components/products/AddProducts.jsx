@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Select, Button, Upload, InputNumber, ColorPicker, message, Spin } from 'antd';
+import { Input, Select, Button, Upload, InputNumber, ColorPicker, message, Spin, Image as AntImage } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ColorExtractor } from 'react-color-extractor';
 import { productCreateApi, categoryListApi, getSingleProductApi, updateProductApi } from '../../api/admin/productApi';
@@ -12,7 +12,7 @@ const { Option } = Select;
 const AddProduct = ({ mode = 'create', productId = null }) => {
   const navigate = useNavigate();
   const isEditMode = mode === 'edit';
-  const { categories, setCategories } = useProductStore();
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -157,6 +157,11 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
 
     fetchProductForEdit();
   }, [isEditMode, productId]);
+
+
+  useEffect(() => {
+    console.log("formData.variants", formData.variants);
+  }, [formData.variants]);
 
   const getSubCategories = (categoryId) => {
     if (!categories || !Array.isArray(categories)) return [];
@@ -568,12 +573,52 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
                 )}
               </Upload>
 
-              {variant.images.length > 0 && extractingColors[variantIndex] && (
-                <div style={{ display: 'none' }}>
-                  <ColorExtractor
-                    src={variant.images[0]}
-                    getColors={(colors) => handleColorsExtracted(colors, variantIndex)}
-                  />
+              {(variant.existingImages.length > 0 || variant.imageFiles.length > 0) && (
+                <div className="mt-4 mb-4">
+                  <label className="block text-sm font-medium mb-2 text-gray-600">
+                    Image Previews ({variant.existingImages.length + variant.imageFiles.length} total)
+                  </label>
+                  <AntImage.PreviewGroup>
+                    <div className="flex flex-wrap gap-2">
+                      {/* Display existing images from database */}
+                      {variant.existingImages.map((imgUrl, idx) => (
+                        <div key={`existing-${idx}`} className="relative">
+                          <AntImage
+                            src={imgUrl}
+                            alt={`Existing ${idx + 1}`}
+                            width={100}
+                            height={100}
+                            style={{ objectFit: 'cover', borderRadius: '8px' }}
+                          />
+                          <span className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-2 py-0.5 rounded">
+                            Existing
+                          </span>
+                        </div>
+                      ))}
+
+                      {/* Display newly uploaded images */}
+                      {variant.imageFiles.map((file, idx) => {
+                        if (file.originFileObj) {
+                          const previewUrl = URL.createObjectURL(file.originFileObj);
+                          return (
+                            <div key={`new-${idx}`} className="relative">
+                              <AntImage
+                                src={previewUrl}
+                                alt={`New ${idx + 1}`}
+                                width={100}
+                                height={100}
+                                style={{ objectFit: 'cover', borderRadius: '8px' }}
+                              />
+                              <span className="absolute top-1 left-1 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
+                                New
+                              </span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  </AntImage.PreviewGroup>
                 </div>
               )}
             </div>

@@ -6,6 +6,8 @@ const useProductStore = create((set, get) => ({
   products: [],
   loading: false,
   error: null,
+  // Categories
+  categories: [],
 
   // Pagination metadata from backend
   pagination: {
@@ -161,6 +163,11 @@ const useProductStore = create((set, get) => ({
   // Get product by ID
   getProductById: (productId) => {
     return get().products.find(p => p._id === productId);
+  },
+
+  // Set categories
+  setCategories: (categories) => {
+    set({ categories });
   },
 }));
 
