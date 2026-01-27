@@ -83,7 +83,9 @@ const EditProducts = ({ mode = 'view', productId = null }) => {
                     canvas.toBlob(
                         (blob) => {
                             if (blob) {
-                                const compressedFile = new File([blob], file.name, {
+                                // Create a new file from the blob with .webp extension
+                                const webpFilename = file.name.replace(/\.(jpg|jpeg|png|gif)$/i, '.webp');
+                                const compressedFile = new File([blob], webpFilename, {
                                     type: 'image/webp',
                                     lastModified: Date.now()
                                 });

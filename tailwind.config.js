@@ -6,9 +6,15 @@ export default {
   ],
   theme: {
     extend: {
-      colors:{
-        "Brown":"#1E140F",
-        "Black":"#010001"
+      colors: {
+        // Brand Colors
+        "brand-black": "#010001",
+        "brand-gold": "#FFD700",
+        "brand-brown": "#1E140F",
+
+        // Keep legacy names for backward compatibility
+        "Brown": "#1E140F",
+        "Black": "#010001"
       }
     },
   },

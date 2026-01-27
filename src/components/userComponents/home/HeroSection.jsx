@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, TrendingUp, Award } from 'lucide-react';
 import logoImage from '../../../assets/logo_transparent.png';
+import logo1 from '../../../assets/logo1-removebg.png';
 
 // Image component with fallback
 const ImageWithFallback = ({ src, alt, className }) => {
@@ -28,7 +29,7 @@ const ImageWithFallback = ({ src, alt, className }) => {
 
 const HeroSection = () => {
     return (
-        <section className="relative min-h-screen flex items-center overflow-hidden bg-[#010001] pt-20">
+        <section className="relative min-h-screen flex items-center overflow-hidden bg-brand-black pt-20">
             {/* Split Layout with Images */}
             <div className="absolute inset-0 grid grid-cols-1 lg:grid-cols-2">
                 {/* Left Image */}
@@ -38,7 +39,7 @@ const HeroSection = () => {
                         alt="Fashion Model 1"
                         className="w-full h-full object-cover opacity-40 lg:opacity-60"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#010001] via-[#010001]/50 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-brand-black via-brand-black/50 to-transparent"></div>
                 </div>
 
                 {/* Right Image */}
@@ -48,7 +49,7 @@ const HeroSection = () => {
                         alt="Fashion Model 2"
                         className="w-full h-full object-cover opacity-60"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-l from-[#010001] via-[#010001]/50 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-l from-brand-black via-brand-black/50 to-transparent"></div>
                 </div>
             </div>
 
@@ -65,7 +66,7 @@ const HeroSection = () => {
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
-                    className="absolute top-1/4 right-1/4 w-64 h-64 bg-[#FFD700] rounded-full blur-[100px] opacity-20"
+                    className="absolute top-1/4 right-1/4 w-64 h-64 bg-brand-gold rounded-full blur-[100px] opacity-20"
                 />
                 <motion.div
                     animate={{
@@ -77,7 +78,7 @@ const HeroSection = () => {
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
-                    className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-[#FFD700] rounded-full blur-[120px] opacity-15"
+                    className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-brand-gold rounded-full blur-[120px] opacity-15"
                 />
             </div>
 
@@ -94,7 +95,7 @@ const HeroSection = () => {
                             className="mb-8"
                         >
                             <img
-                                src={logoImage}
+                                src={logo1}
                                 alt="JazzUp Logo"
                                 className="w-56 h-auto object-contain filter drop-shadow-[0_4px_20px_rgba(255,215,0,0.4)]"
                             />
@@ -107,13 +108,13 @@ const HeroSection = () => {
                             transition={{ duration: 0.8, delay: 0.2 }}
                         >
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="h-px w-12 bg-[#FFD700]"></div>
-                                <span className="text-[#FFD700] tracking-[0.3em] uppercase text-sm">Winter 2026 Collection</span>
+                                <div className="h-px w-12 bg-brand-gold"></div>
+                                <span className="text-brand-gold tracking-[0.3em] uppercase text-sm">Winter 2026 Collection</span>
                             </div>
 
                             <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mb-6 leading-none">
                                 <span className="block text-white mb-3">ELEVATE</span>
-                                <span className="block text-[#FFD700] mb-3">YOUR STYLE</span>
+                                <span className="block text-brand-gold mb-3">YOUR STYLE</span>
                                 <span className="block text-white/90 text-3xl sm:text-4xl lg:text-5xl">to new heights</span>
                             </h1>
 
@@ -126,7 +127,7 @@ const HeroSection = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.05, x: 10 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="group px-8 py-4 bg-[#FFD700] text-[#010001] rounded-none text-lg hover:bg-white transition-all flex items-center justify-center gap-3 relative overflow-hidden"
+                                    className="group px-8 py-4 bg-brand-gold text-brand-black rounded-none text-lg hover:bg-white transition-all flex items-center justify-center gap-3 relative overflow-hidden"
                                 >
                                     <span className="relative z-10">Shop Collection</span>
                                     <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
@@ -141,7 +142,7 @@ const HeroSection = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-none text-lg hover:bg-white hover:text-[#010001] transition-all"
+                                    className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-none text-lg hover:bg-white hover:text-brand-black transition-all"
                                 >
                                     View Lookbook
                                 </motion.button>
@@ -149,16 +150,16 @@ const HeroSection = () => {
 
                             {/* Stats */}
                             <div className="grid grid-cols-3 gap-6">
-                                <div className="border-l-2 border-[#FFD700] pl-4">
-                                    <div className="text-[#FFD700] text-3xl">500+</div>
+                                <div className="border-l-2 border-brand-gold pl-4">
+                                    <div className="text-brand-gold text-3xl">500+</div>
                                     <div className="text-white/60 text-sm">Products</div>
                                 </div>
-                                <div className="border-l-2 border-[#FFD700] pl-4">
-                                    <div className="text-[#FFD700] text-3xl">50K+</div>
+                                <div className="border-l-2 border-brand-gold pl-4">
+                                    <div className="text-brand-gold text-3xl">50K+</div>
                                     <div className="text-white/60 text-sm">Happy Customers</div>
                                 </div>
-                                <div className="border-l-2 border-[#FFD700] pl-4">
-                                    <div className="text-[#FFD700] text-3xl">100%</div>
+                                <div className="border-l-2 border-brand-gold pl-4">
+                                    <div className="text-brand-gold text-3xl">100%</div>
                                     <div className="text-white/60 text-sm">Premium Quality</div>
                                 </div>
                             </div>
@@ -175,11 +176,11 @@ const HeroSection = () => {
                         {/* Card 1 */}
                         <motion.div
                             whileHover={{ scale: 1.05, x: -10 }}
-                            className="bg-[#1E140F]/80 backdrop-blur-sm border border-[#FFD700]/30 p-6 rounded-2xl"
+                            className="bg-brand-brown/80 backdrop-blur-sm border border-brand-gold/30 p-6 rounded-2xl"
                         >
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-[#FFD700]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <Sparkles className="w-6 h-6 text-[#FFD700]" />
+                                <div className="w-12 h-12 bg-brand-gold/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <Sparkles className="w-6 h-6 text-brand-gold" />
                                 </div>
                                 <div>
                                     <h3 className="text-white text-xl mb-2">New Arrivals</h3>
@@ -191,11 +192,11 @@ const HeroSection = () => {
                         {/* Card 2 */}
                         <motion.div
                             whileHover={{ scale: 1.05, x: -10 }}
-                            className="bg-[#1E140F]/80 backdrop-blur-sm border border-[#FFD700]/30 p-6 rounded-2xl"
+                            className="bg-brand-brown/80 backdrop-blur-sm border border-brand-gold/30 p-6 rounded-2xl"
                         >
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-[#FFD700]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <TrendingUp className="w-6 h-6 text-[#FFD700]" />
+                                <div className="w-12 h-12 bg-brand-gold/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <TrendingUp className="w-6 h-6 text-brand-gold" />
                                 </div>
                                 <div>
                                     <h3 className="text-white text-xl mb-2">Trending Now</h3>
@@ -207,11 +208,11 @@ const HeroSection = () => {
                         {/* Card 3 */}
                         <motion.div
                             whileHover={{ scale: 1.05, x: -10 }}
-                            className="bg-[#1E140F]/80 backdrop-blur-sm border border-[#FFD700]/30 p-6 rounded-2xl"
+                            className="bg-brand-brown/80 backdrop-blur-sm border border-brand-gold/30 p-6 rounded-2xl"
                         >
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 bg-[#FFD700]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <Award className="w-6 h-6 text-[#FFD700]" />
+                                <div className="w-12 h-12 bg-brand-gold/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <Award className="w-6 h-6 text-brand-gold" />
                                 </div>
                                 <div>
                                     <h3 className="text-white text-xl mb-2">VIP Access</h3>
@@ -231,7 +232,7 @@ const HeroSection = () => {
             >
                 <div className="flex flex-col items-center gap-2">
                     <span className="text-white/50 text-xs tracking-widest uppercase">Scroll</span>
-                    <div className="w-px h-16 bg-gradient-to-b from-[#FFD700] to-transparent"></div>
+                    <div className="w-px h-16 bg-gradient-to-b from-brand-gold to-transparent"></div>
                 </div>
             </motion.div>
         </section>
