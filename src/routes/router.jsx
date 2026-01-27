@@ -4,7 +4,6 @@ import { createBrowserRouter } from "react-router-dom";
 import AdminLayout from "../components/common/layouts/AdminLayout";
 import UserLayout from "../components/common/layouts/UserLayout";
 import AddProductPage from "../pages/admin/products/AddProductPage";
-import SingleProductPage from "../pages/admin/products/SingleProductPage";
 import EditProductPage from "../pages/admin/products/EditProductPage";
 
 import ProtectedRoute from "../routes/ProtectedRoute";
@@ -42,7 +41,7 @@ export const router = createBrowserRouter([
       { path: "/admin/product-list", element: <ProductsListPage /> },
       { path: "/admin/product-create", element: <AddProductPage /> },
       { path: "/admin/bookings", element: <BookingsListPage /> },
-      { path: "/admin/product/:id", element: <SingleProductPage /> },
+      { path: "/admin/product/:id", element: <EditProductPage /> },
       { path: "/admin/product-edit/:id", element: <EditProductPage /> },
 
     ],
@@ -58,7 +57,7 @@ export const router = createBrowserRouter([
       { path: "/", element: <HomePage /> },
       { path: "/product/:id", element: <ProductDetailPage /> },
       { path: "/my-bookings", element: <MyBookingsPage /> },
-      
+
     ],
   },
 ]);

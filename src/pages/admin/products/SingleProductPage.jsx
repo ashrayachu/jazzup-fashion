@@ -1,10 +1,8 @@
-import SingleProduct from "../../../components/products/SingleProduct"
+import EditProducts from "../../../components/adminComponents/products/EditProducts"
 
 const SingleProductPage = () => {
     return (
-        <div>
-            <SingleProduct />
-        </div>
+        <EditProducts mode="view" />
     );
 };
 

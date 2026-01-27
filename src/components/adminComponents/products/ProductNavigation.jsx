@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Select, Input, Button } from "antd";
 import { DownOutlined, SettingOutlined, FilterOutlined } from "@ant-design/icons";
-import { categoryListApi } from '../../api/admin/productApi';
+import { categoryListApi } from '../../../api/admin/productApi';
 
 const { Search } = Input;
 

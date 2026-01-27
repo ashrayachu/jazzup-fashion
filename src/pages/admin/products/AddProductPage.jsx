@@ -1,4 +1,4 @@
-import AddProducts from "../../../components/products/AddProducts";
+import AddProducts from "../../../components/adminComponents/products/AddProducts";
 
 const AddProductPage = () => {
     return (

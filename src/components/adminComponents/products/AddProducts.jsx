@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Select, Button, Upload, InputNumber, ColorPicker, message, Spin, Image as AntImage } from 'antd';
+import { Input, Select, Button, Upload, InputNumber, ColorPicker, message, Image as AntImage } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { ColorExtractor } from 'react-color-extractor';
-import { productCreateApi, categoryListApi, getSingleProductApi, updateProductApi } from '../../api/admin/productApi';
+import { productCreateApi, categoryListApi } from '../../../api/admin/productApi';
 import { useNavigate } from 'react-router-dom';
-import useProductStore from '../../store/useProductStore';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
-const AddProduct = ({ mode = 'create', productId = null }) => {
+const AddProduct = () => {
   const navigate = useNavigate();
-  const isEditMode = mode === 'edit';
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -32,13 +28,10 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
         colorCode: '#000000',
         images: [],
         imageFiles: [],
-        existingImages: [], // Track existing images from database
         sizes: [{ size: '', quantity: '' }]
       }
     ]
   });
-
-  const [extractingColors, setExtractingColors] = useState({});
 
   const sizeTypeOptions = {
     Perfume: 'Volume (ml)',
@@ -79,7 +72,7 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
               if (blob) {
                 // Create a new file from the blob
                 const compressedFile = new File([blob], file.name, {
-                  type: 'image/jpeg',
+                  type: 'image/webp',
                   lastModified: Date.now()
                 });
                 resolve(compressedFile);
@@ -87,7 +80,7 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
                 reject(new Error('Canvas to Blob conversion failed'));
               }
             },
-            'image/jpeg',
+            'image/webp',
             0.8 // Quality: 0.8 = 80%
           );
         };
@@ -97,12 +90,12 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
     });
   };
 
+  // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await categoryListApi();
         setCategories(response.data.categories);
-        console.log("Fetched categories:", categories);
       } catch (err) {
         console.error("Error fetching categories:", err);
         message.error("Failed to load categories");
@@ -110,58 +103,6 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
     };
     fetchCategories();
   }, []);
-
-  // Fetch product data for edit mode
-  useEffect(() => {
-    const fetchProductForEdit = async () => {
-      if (!isEditMode || !productId) return;
-
-      try {
-        setLoading(true);
-        const response = await getSingleProductApi(productId);
-
-        if (response?.data?.success) {
-          const product = response.data.product;
-
-          // Populate form with existing data
-          setFormData({
-            name: product.name,
-            brand: product.brand,
-            categoryId: product.category?._id || product.category,
-            subCategory: product.subCategory,
-            price: product.price,
-            description: product.description || '',
-            sizeType: product.sizeType || '',
-            fabric: product.fabric || '',
-            fitType: product.fitType || '',
-            sleeveType: product.sleeveType || '',
-            variants: product.variants.map(variant => ({
-              color: variant.color,
-              colorCode: variant.colorCode,
-              images: variant.images || [], // For display
-              imageFiles: [], // New uploads
-              existingImages: variant.images || [], // Track existing
-              sizes: variant.sizes || [{ size: '', quantity: '' }]
-            }))
-          });
-
-          message.success('Product loaded successfully');
-        }
-      } catch (err) {
-        console.error('Error fetching product:', err);
-        message.error('Failed to load product data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProductForEdit();
-  }, [isEditMode, productId]);
-
-
-  useEffect(() => {
-    console.log("formData.variants", formData.variants);
-  }, [formData.variants]);
 
   const getSubCategories = (categoryId) => {
     if (!categories || !Array.isArray(categories)) return [];
@@ -250,20 +191,7 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
     const newVariants = [...formData.variants];
     newVariants[variantIndex].imageFiles = compressedFileList;
 
-    // Create preview URLs for new uploads
-    const newImageUrls = compressedFileList
-      .filter(file => file.originFileObj)
-      .map(file => URL.createObjectURL(file.originFileObj));
-    // Combine existing images with new uploads
-    const existingImages = newVariants[variantIndex].existingImages || [];
-    newVariants[variantIndex].images = [...existingImages, ...newImageUrls];
-
     setFormData({ ...formData, variants: newVariants });
-
-    // Trigger color extraction for first image
-    if (newImageUrls.length > 0) {
-      setExtractingColors({ ...extractingColors, [variantIndex]: true });
-    }
   };
 
   const addVariant = () => {
@@ -271,7 +199,7 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
       ...formData,
       variants: [
         ...formData.variants,
-        { color: '', colorCode: '#000000', images: [], imageFiles: [], existingImages: [], sizes: [{ size: '', quantity: '' }] }
+        { color: '', colorCode: '#000000', images: [], imageFiles: [], sizes: [{ size: '', quantity: '' }] }
       ]
     });
   };
@@ -292,6 +220,25 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
     newVariants[variantIndex].sizes = newVariants[variantIndex].sizes.filter((_, i) => i !== sizeIndex);
     setFormData({ ...formData, variants: newVariants });
   };
+
+  const handleRemoveImage = (variantIndex, imageIndex) => {
+    const variant = formData.variants[variantIndex];
+    const totalImages = variant.imageFiles?.length || 0;
+
+    // Prevent deletion if only one image exists
+    if (totalImages <= 1) {
+      message.warning('Each variant must have at least one image');
+      return;
+    }
+
+    const newVariants = [...formData.variants];
+    newVariants[variantIndex].imageFiles = newVariants[variantIndex].imageFiles.filter(
+      (_, idx) => idx !== imageIndex
+    );
+    setFormData({ ...formData, variants: newVariants });
+    message.success('Image removed successfully');
+  };
+
 
   const handleSubmit = async () => {
     try {
@@ -373,7 +320,6 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
             colorCode: '#000000',
             images: [],
             imageFiles: [],
-            existingImages: [],
             sizes: [{ size: '', quantity: '' }]
           }
         ]
@@ -573,45 +519,36 @@ const AddProduct = ({ mode = 'create', productId = null }) => {
                 )}
               </Upload>
 
-              {(variant.existingImages.length > 0 || variant.imageFiles.length > 0) && (
+              {variant.imageFiles?.length > 0 && (
                 <div className="mt-4 mb-4">
                   <label className="block text-sm font-medium mb-2 text-gray-600">
-                    Image Previews ({variant.existingImages.length + variant.imageFiles.length} total)
+                    Image Previews ({variant.imageFiles.length} total)
                   </label>
                   <AntImage.PreviewGroup>
                     <div className="flex flex-wrap gap-2">
-                      {/* Display existing images from database */}
-                      {variant.existingImages.map((imgUrl, idx) => (
-                        <div key={`existing-${idx}`} className="relative">
-                          <AntImage
-                            src={imgUrl}
-                            alt={`Existing ${idx + 1}`}
-                            width={100}
-                            height={100}
-                            style={{ objectFit: 'cover', borderRadius: '8px' }}
-                          />
-                          <span className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-2 py-0.5 rounded">
-                            Existing
-                          </span>
-                        </div>
-                      ))}
-
                       {/* Display newly uploaded images */}
                       {variant.imageFiles.map((file, idx) => {
                         if (file.originFileObj) {
+                          const totalImages = variant.imageFiles?.length || 0;
                           const previewUrl = URL.createObjectURL(file.originFileObj);
                           return (
-                            <div key={`new-${idx}`} className="relative">
+                            <div key={`new-${idx}`} className="relative group">
                               <AntImage
                                 src={previewUrl}
-                                alt={`New ${idx + 1}`}
+                                alt={`Image ${idx + 1}`}
                                 width={100}
                                 height={100}
                                 style={{ objectFit: 'cover', borderRadius: '8px' }}
                               />
-                              <span className="absolute top-1 left-1 bg-green-500 text-white text-xs px-2 py-0.5 rounded">
-                                New
-                              </span>
+                              {totalImages > 1 && (
+                                <button
+                                  onClick={() => handleRemoveImage(variantIndex, idx)}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                                  title="Delete image"
+                                >
+                                  <DeleteOutlined className="text-xs" />
+                                </button>
+                              )}
                             </div>
                           );
                         }

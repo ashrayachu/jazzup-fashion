@@ -1,8 +1,8 @@
+import Home from "../../components/userComponents/home/Home"
+
 const HomePage = () => {
     return (
-        <div>
-            <h1>Welcome to Jazzup Fashion</h1>
-        </div>
+            <Home />
     );
 };
 

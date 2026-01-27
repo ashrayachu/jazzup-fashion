@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { Table, Pagination } from "antd";
 import { useNavigate } from 'react-router-dom';
-import PageHeader from "../common/headers/PageHeader";
+import PageHeader from "../../common/headers/PageHeader";
 import ProductNavigation from "./ProductNavigation";
-import useProductStore from '../../store/useProductStore';
-import styles from '../../styles/TableStyles.module.css';
+import useProductStore from '../../../store/useProductStore';
+import styles from '../../../styles/TableStyles.module.css';
 
 function ProductList() {
   const navigate = useNavigate();
