@@ -3,7 +3,7 @@ import { Table, Pagination } from "antd";
 import { useNavigate } from 'react-router-dom';
 import PageHeader from "../../common/headers/PageHeader";
 import ProductNavigation from "./ProductNavigation";
-import useProductStore from '../../../store/useProductStore';
+import useAdminProductStore from '../../../store/useAdminProductStore';
 import styles from '../../../styles/TableStyles.module.css';
 
 function ProductList() {
@@ -20,7 +20,7 @@ function ProductList() {
     setPageSize,
     setFilters,
     clearFilters
-  } = useProductStore();
+  } = useAdminProductStore();
 
   // Fetch products on mount
   useEffect(() => {

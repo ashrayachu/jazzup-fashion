@@ -35,7 +35,7 @@ const HeroSection = () => {
                 {/* Left Image */}
                 <div className="relative h-full">
                     <ImageWithFallback
-                        src="https://images.unsplash.com/photo-1700150662401-9b96a5fedfbb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYXNoaW9uJTIwbW9kZWwlMjBlZGl0b3JpYWx8ZW58MXx8fHwxNzY5MzUxNTA2fDA&ixlib=rb-4.1.0&q=80&w=1080"
+                        src="https://images.unsplash.com/photo-1681890442554-9256eaaa3e67?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                         alt="Fashion Model 1"
                         className="w-full h-full object-cover opacity-40 lg:opacity-60"
                     />

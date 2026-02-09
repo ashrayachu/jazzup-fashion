@@ -36,6 +36,7 @@ const EditProducts = ({ mode = 'view', productId = null }) => {
         fabric: '',
         fitType: '',
         sleeveType: '',
+        collections: [], // Collection tags
         variants: [
             {
                 color: '',
@@ -143,6 +144,7 @@ const EditProducts = ({ mode = 'view', productId = null }) => {
                         fabric: productData.fabric || '',
                         fitType: productData.fitType || '',
                         sleeveType: productData.sleeveType || '',
+                        collections: productData.collections || [],
                         variants: productData.variants.map(variant => ({
                             color: variant.color,
                             colorCode: variant.colorCode,
@@ -371,6 +373,7 @@ const EditProducts = ({ mode = 'view', productId = null }) => {
             form.append("fabric", formData.fabric || "");
             form.append("fitType", formData.fitType || "");
             form.append("sleeveType", formData.sleeveType || "");
+            form.append("collections", JSON.stringify(formData.collections));
 
             const variantsData = formData.variants.map((variant) => ({
                 color: variant.color,
@@ -544,6 +547,15 @@ const EditProducts = ({ mode = 'view', productId = null }) => {
                             {product.sleeveType && (
                                 <Descriptions.Item label="Sleeve Type">
                                     {product.sleeveType}
+                                </Descriptions.Item>
+                            )}
+                            {product.collections && product.collections.length > 0 && (
+                                <Descriptions.Item label="Collections" span={2}>
+                                    {product.collections.map((collection, idx) => (
+                                        <Tag key={idx} color="blue" className="mb-1">
+                                            {collection}
+                                        </Tag>
+                                    ))}
                                 </Descriptions.Item>
                             )}
                             <Descriptions.Item label="Description" span={2}>
@@ -796,6 +808,31 @@ const EditProducts = ({ mode = 'view', productId = null }) => {
                                 onChange={(e) => handleInputChange('description', e.target.value)}
                                 rows={3}
                                 size="large"
+                            />
+                        </div>
+
+                        <div className="mt-4">
+                            <label className="block text-sm font-medium mb-1 text-gray-600">
+                                Collections (Tags)
+                                <span className="text-xs text-gray-500 ml-2">(Select which collections this product belongs to)</span>
+                            </label>
+                            <Select
+                                mode="tags"
+                                placeholder="Select or create collections (e.g., New Arrivals, Best Sellers)"
+                                value={formData.collections}
+                                onChange={(value) => handleInputChange('collections', value)}
+                                size="large"
+                                className="w-full"
+                                options={[
+                                    { label: 'New Arrivals', value: 'New Arrivals' },
+                                    { label: 'Best Sellers', value: 'Best Sellers' },
+                                    { label: 'Featured', value: 'Featured' },
+                                    { label: 'Sale', value: 'Sale' },
+                                    { label: 'Summer Collection', value: 'Summer Collection' },
+                                    { label: 'Winter Collection', value: 'Winter Collection' },
+                                    { label: 'Trending', value: 'Trending' },
+                                    { label: 'Premium', value: 'Premium' },
+                                ]}
                             />
                         </div>
                     </div>

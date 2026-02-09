@@ -22,6 +22,7 @@ const AddProduct = () => {
     fabric: '',
     fitType: '',
     sleeveType: '',
+    collections: [], // Collection tags like "New Arrivals", "Best Sellers"
     variants: [
       {
         color: '',
@@ -272,6 +273,7 @@ const AddProduct = () => {
       form.append("fabric", formData.fabric || "");
       form.append("fitType", formData.fitType || "");
       form.append("sleeveType", formData.sleeveType || "");
+      form.append("collections", JSON.stringify(formData.collections));
 
       const variantsData = formData.variants.map((variant) => ({
         color: variant.color,
@@ -315,6 +317,7 @@ const AddProduct = () => {
         fabric: '',
         fitType: '',
         sleeveType: '',
+        collections: [],
         variants: [
           {
             color: '',
@@ -468,6 +471,31 @@ const AddProduct = () => {
             onChange={(e) => handleInputChange('description', e.target.value)}
             rows={3}
             size="large"
+          />
+        </div>
+
+        <div className="mt-4">
+          <label className="block text-sm font-medium mb-1 text-gray-600">
+            Collections (Tags)
+            <span className="text-xs text-gray-500 ml-2">(Select which collections this product belongs to)</span>
+          </label>
+          <Select
+            mode="tags"
+            placeholder="Select or create collections (e.g., New Arrivals, Best Sellers)"
+            value={formData.collections}
+            onChange={(value) => handleInputChange('collections', value)}
+            size="large"
+            className="w-full"
+            options={[
+              { label: 'New Arrivals', value: 'New Arrivals' },
+              { label: 'Best Sellers', value: 'Best Sellers' },
+              { label: 'Featured', value: 'Featured' },
+              { label: 'Sale', value: 'Sale' },
+              { label: 'Summer Collection', value: 'Summer Collection' },
+              { label: 'Winter Collection', value: 'Winter Collection' },
+              { label: 'Trending', value: 'Trending' },
+              { label: 'Premium', value: 'Premium' },
+            ]}
           />
         </div>
       </div>

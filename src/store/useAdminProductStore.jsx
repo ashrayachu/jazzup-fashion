@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { productListApi } from '../api/admin/productApi';
 
-const useProductStore = create((set, get) => ({
+const useAdminProductStore = create((set, get) => ({
   // Core Data - Only current page from API
   products: [],
   loading: false,
@@ -171,4 +171,4 @@ const useProductStore = create((set, get) => ({
   },
 }));
 
-export default useProductStore;
+export default useAdminProductStore;
