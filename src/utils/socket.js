@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 
 // Initialize Socket.IO client - will connect to backend server
 // Note: This will be used once backend Socket.IO server is ready
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+const SOCKET_URL = import.meta.env.VITE_REACT_APP_API_AXIOS || "http://localhost:5000";
 
 let socket = null;
 
