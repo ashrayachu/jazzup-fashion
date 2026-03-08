@@ -1,28 +1,28 @@
-
 import './App.css'
-
-import Header from './components/common/Header'
-import Banner from './components/Home/Banner'
-import Band from './components/Home/Band'
-import Tending from './components/Home/TendingCollections'
-import Exclusive from './ExclusiveFashion'
-import Fashion from './components/Home/Fashion'
-import Footer from './components/common/Footer'
+import { router } from "./routes/router"
+import { RouterProvider } from "react-router-dom"
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ChatBot from "./components/userComponents/common/ChatBot";
 
 function App() {
   return (
-    <div className="bg-Brown text-white min-h-screen">
-      <Header />
-      <main>
-        <Banner />
-        <Band />
-        <Tending />
-        <Exclusive />
-        <Fashion />
-      </main>
-      <Footer />
-    </div>
-  )
+    <>
+      <RouterProvider router={router} />
+      <ChatBot />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </>
+  );
 }
 
 export default App
