@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
+import ProductsDetails from '../../components/userComponents/products/ProductDetails.jsx';
+
 
 const ProductDetailPage = () => {
-    const { id } = useParams();
+  
 
     return (
-        <div>
-            <h1>Product Detail - {id}</h1>
-        </div>
+        <ProductsDetails/>
     );
 };
 
