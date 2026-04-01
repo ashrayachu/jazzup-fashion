@@ -4,7 +4,7 @@ import logoImage from '../../../assets/logo_transparent.png';
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false );
 
     useEffect(() => {
         const handleScroll = () => {

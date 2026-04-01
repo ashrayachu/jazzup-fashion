@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {useNavigate} from "react-router-dom"
 import { motion } from 'framer-motion';
 import { Filter, ChevronDown, Search } from 'lucide-react';
 import { getUserCategoriesApi, getUserProductsApi } from '../../../api/user/productApi';
@@ -19,45 +20,47 @@ const ImageWithFallback = ({ src, alt, className }) => {
 };
 
 const ShopSection = () => {
-   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch categories
-  useEffect(() => {
-    const AllCategories = async () => {
-      const response = await getUserCategoriesApi();
-      const cats = response?.data?.categories || [];
-      setCategories(cats);
-      // Set first category as default if available
-      if (cats.length > 0) {
-        setSelectedCategory(cats[0]);
-      }
-    };
-    AllCategories();
-  }, []);
+    const navigate = useNavigate();
 
-  // Fetch products when category changes
-  useEffect(() => {
-    const AllProducts = async () => {
-      if (!selectedCategory?._id) return;
-      
-      const response = await getUserProductsApi({ 
-        category: selectedCategory._id, 
-        limit: 20, 
-        page: 1 
-      });
-      setProducts(response?.data?.data?.products || []);
-    };
-    AllProducts();
-  }, [selectedCategory]);
+    // Fetch categories
+    useEffect(() => {
+        const AllCategories = async () => {
+            const response = await getUserCategoriesApi();
+            const cats = response?.data?.categories || [];
+            setCategories(cats);
+            // Set first category as default if available
+            if (cats.length > 0) {
+                setSelectedCategory(cats[0]);
+            }
+        };
+        AllCategories();
+    }, []);
 
-  // Filter products
-  const filteredProducts = (products || []).filter(product => {
-    const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+    // Fetch products when category changes
+    useEffect(() => {
+        const AllProducts = async () => {
+            if (!selectedCategory?._id) return;
+
+            const response = await getUserProductsApi({
+                category: selectedCategory._id,
+                limit: 20,
+                page: 1
+            });
+            setProducts(response?.data?.data?.products || []);
+        };
+        AllProducts();
+    }, [selectedCategory]);
+
+    // Filter products
+    const filteredProducts = (products || []).filter(product => {
+        const matchesSearch = product.name?.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesSearch;
+    });
 
     return (
         <div className="bg-brand-black min-h-screen pt-20">
@@ -139,7 +142,8 @@ const ShopSection = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             key={product._id}
-                            className="group relative bg-brand-brown rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-brand-gold/10 transition-all duration-300"
+                            className="group relative bg-brand-brown rounded-2xl cursor-pointer overflow-hidden hover:shadow-xl hover:shadow-brand-gold/10 transition-all duration-300"
+                            onClick={() => navigate(`/product/${product?._id}`)}
                         >
                             <div className="relative h-72 overflow-hidden">
                                 <ImageWithFallback
