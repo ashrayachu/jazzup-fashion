@@ -1,10 +1,12 @@
 import { ShoppingCart, User, Menu, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import logoImage from '../../../assets/logo_transparent.png';
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const navigate = useNavigate()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -21,8 +23,8 @@ const Navbar = () => {
 
     return (
         <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                ? 'bg-[#010001]/95 backdrop-blur-sm border-b border-white/10'
-                : 'bg-transparent'
+            ? 'bg-[#010001]/95 backdrop-blur-sm border-b border-white/10'
+            : 'bg-transparent'
             }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
@@ -49,7 +51,7 @@ const Navbar = () => {
                         <button className="text-white hover:text-[#FFD700] transition-colors">
                             <Search className="w-5 h-5" />
                         </button>
-                        <button className="text-white hover:text-[#FFD700] transition-colors">
+                        <button className="text-white hover:text-[#FFD700] transition-colors" onClick={navigate('/login')}>
                             <User className="w-5 h-5" />
                         </button>
                         <button className="text-white hover:text-[#FFD700] transition-colors relative">
