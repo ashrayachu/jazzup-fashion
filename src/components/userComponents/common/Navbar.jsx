@@ -51,7 +51,7 @@ const Navbar = () => {
                         <button className="text-white hover:text-[#FFD700] transition-colors">
                             <Search className="w-5 h-5" />
                         </button>
-                        <button className="text-white hover:text-[#FFD700] transition-colors" onClick={navigate('/login')}>
+                        <button className="text-white hover:text-[#FFD700] transition-colors" onClick={() => navigate('/login')}>
                             <User className="w-5 h-5" />
                         </button>
                         <button className="text-white hover:text-[#FFD700] transition-colors relative">

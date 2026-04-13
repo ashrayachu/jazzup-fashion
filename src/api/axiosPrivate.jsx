@@ -11,8 +11,8 @@ const axiosPrivate = axios.create({
 // ...existing code...
 axiosPrivate.interceptors.request.use(
     (config) => {
-        // Get the auth-storage object
-        const authStorage = sessionStorage.getItem('auth-storage');
+        // Get the auth-storage object from localStorage (not sessionStorage)
+        const authStorage = localStorage.getItem('auth-storage');
         let token = null;
         if (authStorage) {
             try {
@@ -47,8 +47,8 @@ axiosPrivate.interceptors.response.use(
 
         // Handle unauthorized errors
         if (error?.response?.status === 401) {
-            // Remove token and redirect to login
-            sessionStorage.removeItem('auth-storage');
+            // Remove token from localStorage and redirect to login
+            localStorage.removeItem('auth-storage');
             window.location.href = '/login'; // or your login route
         }
 

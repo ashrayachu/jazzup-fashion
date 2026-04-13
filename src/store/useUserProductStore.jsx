@@ -105,12 +105,24 @@ const useUserProductStore = create((set, get) => ({
             const response = await getUserProductByIdApi(productId);
 
             if (response?.data?.success) {
+                const productData = response.data.product || response.data.data?.product || response.data.data;
+
                 set({
-                    currentProduct: response.data.data,
+                    currentProduct: productData || null,
                     loading: false,
+                    error: productData ? null : 'Product not found',
                 });
-                return response.data.data;
+
+                return productData || null;
             }
+
+            set({
+                currentProduct: null,
+                loading: false,
+                error: response?.data?.message || 'Product not found',
+            });
+
+            return null;
         } catch (error) {
             console.error('Error fetching product:', error);
             set({

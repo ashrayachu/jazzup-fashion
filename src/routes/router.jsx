@@ -19,12 +19,17 @@ import ShopPage from "../pages/user/ShopPage";
 
 //common pages
 import Login from "../pages/Login";
+import SignUpPage from "../pages/SignUpPage"
 import Unauthorized from "../pages/Unauthorized";
 
 export const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+   {
+    path: "/signup",
+    element: <SignUpPage />,
   },
   {
     path: "/unauthorized",

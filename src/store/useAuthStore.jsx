@@ -65,7 +65,7 @@ const useAuthStore = create(
     }),
     {
       name: "auth-storage",
-      storage: createJSONStorage(() => sessionStorage), // Changed from getStorage
+      storage: createJSONStorage(() => localStorage), // Changed from getStorage
     }
   )
 );
