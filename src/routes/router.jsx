@@ -1,4 +1,3 @@
-import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 import AdminLayout from "../components/common/layouts/AdminLayout";
@@ -16,6 +15,10 @@ import HomePage from "../pages/user/HomePage";
 import ProductDetailPage from "../pages/user/ProductDetailPage";
 import MyBookingsPage from "../pages/user/MyBookingsPage";
 import ShopPage from "../pages/user/ShopPage";
+import CartPage from "../pages/user/CartPage";
+import CheckoutPage from "../pages/user/CheckoutPage";
+
+
 
 //common pages
 import Login from "../pages/Login";
@@ -64,6 +67,10 @@ export const router = createBrowserRouter([
       { path: "/product/:id", element: <ProductDetailPage /> },
       { path: "/my-bookings", element: <MyBookingsPage /> },
       { path: "/shop", element: <ShopPage /> },
+      { path: "/cart", element: <CartPage /> },
+      { path: "/checkout", element: <CheckoutPage /> },
+
+      
 
     ],
   },

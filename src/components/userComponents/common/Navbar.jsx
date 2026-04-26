@@ -2,11 +2,15 @@ import { ShoppingCart, User, Menu, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import logoImage from '../../../assets/logo_transparent.png';
+import useCartStore from "../../../store/useCartStore"
+
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const navigate = useNavigate()
+    const { itemCount } = useCartStore()
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -54,9 +58,13 @@ const Navbar = () => {
                         <button className="text-white hover:text-[#FFD700] transition-colors" onClick={() => navigate('/login')}>
                             <User className="w-5 h-5" />
                         </button>
-                        <button className="text-white hover:text-[#FFD700] transition-colors relative">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/cart')}
+                            className="text-white hover:text-[#FFD700] transition-colors relative"
+                        >
                             <ShoppingCart className="w-5 h-5" />
-                            <span className="absolute -top-2 -right-2 bg-[#FFD700] text-[#010001] text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">0</span>
+                            <span className="absolute -top-2 -right-2 bg-[#FFD700] text-[#010001] text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">{itemCount}</span>
                         </button>
                         <button
                             className="md:hidden text-white"

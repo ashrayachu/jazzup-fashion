@@ -6,7 +6,7 @@ const ShopPage = () => {
 
     return (
         <div>
-           <ShopSection />
+            <ShopSection />
         </div>
     );
 };
